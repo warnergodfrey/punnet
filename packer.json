@@ -21,7 +21,7 @@
       "ssh_port": 22,
       "ssh_wait_timeout": "90m",
       "vm_name": "raspberrypi",
-      "net_device": "pcnet",
+      "net_device": "smc91c111",
       "boot_wait": "30s",
       "qemu_binary": "qemu-system-arm",
       "machine_type": "integratorcp",
@@ -33,8 +33,6 @@
         [ "-M", "versatilepb" ],
         [ "-serial", "stdio" ],
         [ "-append", "root=/dev/sda2" ],
-        [ "-net", "nic" ],
-        [ "-net", "user" ],
         [ "--no-reboot", "" ]
       ]
     }
