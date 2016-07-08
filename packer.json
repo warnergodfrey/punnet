@@ -3,38 +3,45 @@
   [
     {
       "type": "qemu",
-      "iso_url": "file:///home/vagrant/qemu_vms/raspbian_latest.img",
-      "iso_checksum": "77a60a5c38dfd56b61c63dc4a5872cbf",
+      "iso_url": "http://raspbian-qemu.s3-website-ap-southeast-2.amazonaws.com/2016-05-27-raspbian-jessie.img",
+      "iso_checksum": "ab10428b7d52f959285560368001d514",
       "iso_checksum_type": "md5",
-      "output_directory": "output_raspberrypi",
-      "ssh_wait_timeout": "30s",
-      "shutdown_command": "halt",
+      "output_directory": "output",
       "disk_size": 4000,
-      "disk_interface": "scsi",
       "format": "raw",
       "headless": false,
       "accelerator": "none",
-      "ssh_host_port_min": 2222,
-      "ssh_host_port_max": 2229,
       "ssh_username": "pi",
       "ssh_password": "raspberry",
-      "ssh_port": 22,
-      "ssh_wait_timeout": "90m",
-      "vm_name": "raspberrypi",
-      "net_device": "smc91c111",
-      "boot_wait": "30s",
+      "ssh_wait_timeout": "30m",
+      "vm_name": "raspberrypi.img",
+      "boot_wait": "60s",
       "qemu_binary": "qemu-system-arm",
-      "machine_type": "integratorcp",
       "disk_image": true,
+      "machine_type": "versatilepb",
+      "disk_interface": "scsi",
+      "format": "raw",
+      "shutdown_command": "echo 'raspberry' | sudo -S -E /sbin/poweroff",
       "qemuargs": [
-        [ "-kernel", "/home/vagrant/qemu_vms/kernel-qemu" ],
+        [ "-kernel", "kernel-qemu" ],
+        [ "-no-reboot", ""],
         [ "-cpu", "arm1176" ],
         [ "-m", "256M" ],
-        [ "-M", "versatilepb" ],
         [ "-serial", "stdio" ],
-        [ "-append", "root=/dev/sda2" ],
-        [ "--no-reboot", "" ]
+        [ "-net", "nic" ],
+        [ "-net", "user" ],
+        [ "-redir", "tcp:{{ .SSHHostPort }}::22"],
+        [ "-netdev", "socket,id=dummy,mcast=239.192.168.1:1102" ],
+        [ "-device", "pci-testdev" ],
+        [ "-append", "root=/dev/sda2 panic=1 rootfstype=ext4 rw" ]
       ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "screenly/install.sh",
+      "execute_command": "echo 'raspberry' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'"
     }
   ]
 }
